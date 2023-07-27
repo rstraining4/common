@@ -10,8 +10,9 @@ hostnamectl set-hostname terraform-base
 
 
 echo "=================Inatallation and configuration of Terraform=================="
-sudo curl -O https://releases.hashicorp.com/terraform/1.2.4/terraform_1.2.4_linux_amd64.zip
-unzip terraform_1.2.4_linux_amd64.zip -d /usr/local/bin/
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+sudo yum -y install terraform
 terraform --version
 
 echo "===============firewall setup================="
@@ -22,9 +23,13 @@ sudo firewall-cmd --reload
 echo "=============Starting of installation and configuration of Jenkins============="
 
 sudo wget http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -O /etc/yum.repos.d/jenkins.repo
-sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
-sudo dnf install -y jenkins
-systemctl enable jenkins
-systemctl start jenkins
-systemctl status jenkins
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo yum upgrade
+# Add required dependencies for the jenkins package
+sudo yum install -y java-17-openjdk
+sudo yum install -y jenkins
+sudo systemctl daemon-reload
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
 exec bash
